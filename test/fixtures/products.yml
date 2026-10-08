@@ -1,0 +1,12 @@
+published:
+  name: Field Guide
+  slug: field-guide
+  status: published
+  summary: A useful guide
+  price_cents: 1900
+
+draft:
+  name: Secret Guide
+  slug: secret-guide
+  status: draft
+  price_cents: 900

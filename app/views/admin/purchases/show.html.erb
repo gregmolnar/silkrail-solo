@@ -1,0 +1,64 @@
+<%= link_to "← Sales", admin_purchases_path, class: "text-sm text-slate-500" %>
+<h1 class="mt-3 text-3xl font-black">Sale details</h1>
+
+<dl class="mt-8 max-w-2xl divide-y rounded-2xl border bg-white p-6">
+  <% [
+    ["Customer", @purchase.email],
+    ["Product", @purchase.product.name],
+    ["Source", @purchase.source.humanize],
+    ["Amount", humanized_money_with_symbol(@purchase.amount)],
+    ["Purchased", @purchase.created_at.to_fs(:long)],
+    ["External ID", @purchase.external_id],
+    ["Stripe session", @purchase.stripe_checkout_session_id],
+    ["Payment intent", @purchase.stripe_payment_intent_id]
+  ].each do |label, value| %>
+    <% if value.present? %>
+      <div class="grid gap-2 py-4 sm:grid-cols-3">
+        <dt class="text-sm text-slate-500"><%= label %></dt>
+        <dd class="break-all font-medium sm:col-span-2"><%= value %></dd>
+      </div>
+    <% end %>
+  <% end %>
+</dl>
+
+<section class="mt-8 max-w-2xl rounded-2xl border bg-white p-6">
+  <h2 class="text-lg font-bold">Download access</h2>
+  <% if @purchase.access_token_revoked? %>
+    <p class="mt-2 text-sm font-semibold text-red-700">Revoked <%= @purchase.access_token_revoked_at.to_fs(:long) %></p>
+    <p class="mt-1 text-sm text-slate-500">Generate a new token to restore access. All previous download links will remain invalid.</p>
+  <% else %>
+    <p class="mt-2 text-sm text-emerald-700">Active</p>
+    <p class="mt-1 break-all font-mono text-xs text-slate-500"><%= purchase_url(@purchase.access_token) %></p>
+  <% end %>
+
+  <div class="mt-5 flex flex-wrap gap-3">
+    <%= button_to "Generate new token", regenerate_download_token_admin_purchase_path(@purchase), method: :patch, data: { turbo_confirm: "Generate a new token? The current download link will stop working." }, class: "rounded-lg border bg-white px-4 py-2 text-sm font-semibold" %>
+    <% unless @purchase.access_token_revoked? %>
+      <%= button_to "Revoke access", revoke_access_token_admin_purchase_path(@purchase), method: :patch, data: { turbo_confirm: "Revoke this download link?" }, class: "rounded-lg bg-red-700 px-4 py-2 text-sm font-semibold text-white" %>
+    <% end %>
+  </div>
+</section>
+
+<section class="mt-8 max-w-2xl rounded-2xl border bg-white p-6">
+  <h2 class="text-lg font-bold">Latest release</h2>
+  <% if @latest_release %>
+    <p class="mt-1 text-sm text-slate-500"><%= @latest_release.name %></p>
+    <% if @latest_release.files.attached? && !@purchase.access_token_revoked? %>
+      <div class="mt-4 space-y-2">
+        <% @latest_release.files.each do |file| %>
+          <%= link_to "Download #{file.filename}", purchase_download_path(@purchase.access_token, file.id), class: "block rounded-lg bg-slate-100 px-4 py-3 font-semibold hover:bg-slate-200" %>
+        <% end %>
+      </div>
+    <% elsif @purchase.access_token_revoked? %>
+      <p class="mt-4 text-sm text-slate-500">Downloads are unavailable while access is revoked.</p>
+    <% else %>
+      <p class="mt-4 text-sm text-slate-500">No files are attached to this release.</p>
+    <% end %>
+  <% else %>
+    <p class="mt-4 text-sm text-slate-500">No published release is available.</p>
+  <% end %>
+</section>
+
+<% unless @purchase.access_token_revoked? %>
+  <%= link_to "Open customer download page", purchase_path(@purchase.access_token), target: "_blank", class: "mt-5 inline-block font-semibold text-emerald-700" %>
+<% end %>

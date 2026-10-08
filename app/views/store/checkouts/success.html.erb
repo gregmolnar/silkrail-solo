@@ -1,0 +1,10 @@
+<% content_for :title, "Purchase complete" %>
+<div class="mx-auto max-w-xl py-16 text-center">
+  <% if @purchase %>
+    <div class="text-5xl">✓</div><h1 class="mt-5 text-4xl font-black">Thank you!</h1>
+    <p class="mt-4 text-slate-600">Your purchase of <strong><%= @purchase.product.name %></strong> is ready. We also sent this link to <%= @purchase.email %>.</p>
+    <%= link_to "Get your files", purchase_path(@purchase.access_token), class: "mt-8 inline-block rounded-xl bg-emerald-600 px-6 py-3 font-bold text-white" %>
+  <% else %>
+    <h1 class="text-3xl font-black">Payment is processing</h1><p class="mt-4 text-slate-600">Refresh this page in a moment or check your email for the download link.</p>
+  <% end %>
+</div>

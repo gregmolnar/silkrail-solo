@@ -1,0 +1,13 @@
+<% content_for :title, "Sign in" %>
+<div class="flex min-h-screen items-center justify-center px-5">
+  <div class="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+    <p class="text-center text-2xl font-black"><%= store.name %></p>
+    <h1 class="mt-6 text-xl font-bold">Owner sign in</h1>
+    <%= form_with url: session_path, class: "mt-6 space-y-5" do |form| %>
+      <div><%= form.label :email_address, class: "block text-sm font-medium" %><%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", class: "mt-2 w-full rounded-lg border border-slate-300 px-3 py-2" %></div>
+      <div><%= form.label :password, class: "block text-sm font-medium" %><%= form.password_field :password, required: true, autocomplete: "current-password", class: "mt-2 w-full rounded-lg border border-slate-300 px-3 py-2" %></div>
+      <%= form.submit "Sign in", class: "w-full cursor-pointer rounded-lg bg-slate-950 px-4 py-2.5 font-semibold text-white hover:bg-slate-800" %>
+    <% end %>
+    <%= link_to "← Back to store", root_path, class: "mt-5 block text-center text-sm text-slate-500" %>
+  </div>
+</div>

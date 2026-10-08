@@ -1,0 +1,133 @@
+# frozen_string_literal: true
+
+owner_for = lambda do |request|
+  Session.find_by(id: request.cookie_jar.signed[:session_id])&.user
+end
+
+customer_for = lambda do |request|
+  CustomerSession.find_by(id: request.cookie_jar.signed[:customer_session_id])&.customer
+end
+
+Testimonials.configure do |config|
+  # Shown in the widget ("Enjoying %{app}?") and interpolated into the
+  # default questions. Defaults to your Rails application name.
+  # config.app_name = "My App"
+
+  # Who sees the widget and can submit. Return false to hide and reject for
+  # this request. Defaults to everyone.
+  # config.enabled = ->(request) { true }
+
+  # Who can triage testimonials at the mount path. Defaults to development
+  # only — override before deploying.
+  config.authorize_admin = ->(request) { owner_for.call(request).present? }
+  #
+  # Two ways to put the dashboard inside an admin you already have.
+  #
+  # The layout only — the gem's controllers, your shell:
+  # config.admin_layout = "admin/application"
+  #
+  # Or the whole stack. Name the controller your own admin inherits from and
+  # the dashboard picks up its layout, helpers, authentication and any request
+  # context its before_actions set up. Only the dashboard inherits it; the
+  # widget's endpoints stay public, so this cannot ask a member leaving a
+  # review for a staff session.
+  # config.base_controller_class = "Admin::BaseController"
+
+  # Attribute submissions to a user (optional). Return an object responding
+  # to #id, or nil. Receives the request.
+  # Devise / Warden:
+  # config.current_user = ->(request) { request.env["warden"]&.user }
+  #
+  # Rails 8 built-in auth (bin/rails generate authentication):
+  # config.current_user = lambda do |request|
+  #   token = request.cookies["session_token"]
+  #   Session.find_signed(token)&.user if token
+  # end
+  config.current_user = customer_for
+  config.user_display = ->(customer) { { name: customer.email_address.split("@").first, email: customer.email_address } }
+
+  # Attribution stored with a signed-in user's submission.
+  # config.user_display = ->(user) { { name: user.name, email: user.email } }
+
+  # Multi-tenancy (optional). Scope testimonials, NPS, the dashboard and the
+  # read API to a tenant — each Organization/Product/Store its own collection.
+  # Return an opaque key (nil = one global collection, the default). A
+  # GlobalID is the recommended key and matches the `has_testimonials` model
+  # concern; an id, subdomain or slug work too. The gem never needs to know
+  # what your tenant is. An admin then sees only their tenant's dashboard.
+  # config.tenant = ->(request) { Current.organization&.to_gid&.to_s }
+  #
+  # Then, optionally, `has_testimonials` for `organization.testimonials`:
+  #   class Organization < ApplicationRecord
+  #     has_testimonials
+  #   end
+
+  # Guiding prompts shown above the message field (not form fields).
+  # Default nil = the gem's built-in localized questions. Override with
+  # literal strings, or a lambda for host-side i18n. [] hides the section.
+  # config.questions = ["How has %{app} helped you?", "What's the best part?"]
+  # config.questions = -> { I18n.t("reviews.questions") }
+
+  # Video testimonials (requires Active Storage).
+  # config.video = true
+  # config.max_video_seconds = 120
+  # config.max_video_size = 50.megabytes
+
+  # Guest headshot upload on the public collection page (requires Active Storage).
+  # config.avatars = true
+  # config.max_avatar_size = 5.megabytes
+
+  # Store uploads (video, poster frame, avatars) on a specific Active Storage
+  # service from config/storage.yml — e.g. a dedicated bucket or folder that
+  # keeps testimonial media apart from the rest of your library. Default:
+  # your environment's default service.
+  # config.storage_service = :testimonials
+
+  # Auto-prompt throttling. Explicit opens (user clicked your link) bypass it.
+  # config.reprompt_after = 90.days
+  # config.max_prompts = 3
+
+  # The prompt history the throttle reads (testimonials_prompt_events).
+  # Installed with --skip-prompt-events, so there is no table and no history is
+  # written. Nothing is throttled, so nothing auto-opens either:
+  # testimonial_prompt! is a no-op here and the widget opens from your own
+  # button, data-testimonial-prompt, or window.Testimonials.open(). To turn
+  # auto-prompts on later: `bin/rails generate testimonials:prompt_events &&
+  # bin/rails db:migrate`, then flip this to true.
+  config.prompt_events = false
+
+  # The public-use consent line, stored verbatim when a customer picks
+  # "use publicly". nil = localized default ("You can use my testimonial
+  # publicly in your marketing and sales."). The private-use line is
+  # localized only (testimonials.consent_private).
+  # config.consent_text = "..."
+
+  # The standalone collection page at /testimonials/new — share it with customers
+  # outside the app. Set false to disable.
+  # config.public_collection = true
+
+  # Unauthenticated read access to GET /testimonials/api/testimonials and
+  # /testimonials/api/stats (approved + consented records only). Off = admins only.
+  config.public_api = true
+
+  # NPS surveys. Promoters (9–10) are offered the testimonial form right away.
+  # Installed with --skip-nps, so there is no testimonials_nps_responses table
+  # and the NPS flow, dashboard tab and public page stay off. To add it later:
+  # `bin/rails generate testimonials:nps && bin/rails db:migrate`, then flip
+  # this to true.
+  config.nps = false
+  # config.nps_reprompt_after = 90.days
+
+  # Called with each saved Testimonial or NpsResponse — notify Slack, email…
+  # config.on_submit = ->(record) {}
+
+  # Called with each NPS response scored 0–6.
+  # config.on_detractor = ->(nps) {}
+
+  # Per-IP throttle for public endpoints (Rails 7.2+; ignored on 7.1).
+  # config.rate_limit = { to: 5, within: 1.minute }
+
+  # Default mount path used by `mount_testimonials`.
+  # Override only if you mount the engine manually.
+  # config.mount_path = "/testimonials"
+end

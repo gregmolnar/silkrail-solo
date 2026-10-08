@@ -1,0 +1,9 @@
+release_notes:
+  record: published (Release)
+  name: notes
+  body: <p>First release</p>
+
+product_update_body:
+  record: announcement (ProductUpdate)
+  name: body
+  body: <p>Download the latest files from your account.</p>

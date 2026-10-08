@@ -1,0 +1,84 @@
+<h1 class="text-3xl font-black">Settings</h1>
+<p class="mt-1 text-slate-500">Store identity, policies, and owner account.</p>
+
+<%= form_with url: admin_settings_path, method: :patch, class: "mt-8 max-w-2xl space-y-8" do |form| %>
+  <section class="rounded-2xl border bg-white p-6">
+    <h2 class="text-lg font-bold">Store</h2>
+    <%= fields_for :store_setting, @settings do |settings| %>
+      <%= render "shared/errors", object: @settings %>
+      <div class="mt-5 space-y-5">
+        <div><%= settings.label :name, class: "text-sm font-semibold" %><%= settings.text_field :name, class: "mt-2 w-full rounded-lg border px-3 py-2" %></div>
+        <div><%= settings.label :description, class: "text-sm font-semibold" %><%= settings.text_area :description, rows: 4, class: "mt-2 w-full rounded-lg border px-3 py-2" %></div>
+        <div><%= settings.label :support_email, class: "text-sm font-semibold" %><%= settings.email_field :support_email, class: "mt-2 w-full rounded-lg border px-3 py-2" %></div>
+        <div><%= settings.label :currency, "Currency (3-letter code)", class: "text-sm font-semibold" %><%= settings.text_field :currency, maxlength: 3, class: "mt-2 w-32 rounded-lg border px-3 py-2 uppercase" %></div>
+        <div>
+          <%= settings.label :custom_css, "General storefront CSS", class: "text-sm font-semibold" %>
+          <p class="mt-1 text-sm text-slate-500">Applied to the storefront, every product page, and buyer download pages. The default value documents all shared selectors.</p>
+          <%= settings.text_area :custom_css, rows: 28, spellcheck: false, class: "mt-2 w-full rounded-lg border border-slate-300 bg-slate-950 px-4 py-3 font-mono text-sm text-slate-100" %>
+        </div>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="rounded-2xl border bg-white p-6">
+    <h2 class="text-lg font-bold">Taxes</h2>
+    <%= fields_for :store_setting, @settings do |settings| %>
+      <div class="mt-5 space-y-5">
+        <label class="flex items-start gap-3">
+          <%= settings.checkbox :stripe_tax_enabled, class: "mt-1 size-4 rounded border-slate-300" %>
+          <span>
+            <span class="block text-sm font-semibold">Enable Stripe Tax</span>
+            <span class="mt-1 block text-sm text-slate-500">Automatically calculate tax, require billing addresses, collect business tax IDs, and create Stripe invoices. Leave disabled when tax collection is not required.</span>
+          </span>
+        </label>
+        <div>
+          <%= settings.label :stripe_tax_behavior, "Displayed prices", class: "text-sm font-semibold" %>
+          <%= settings.select :stripe_tax_behavior, [["Include tax in the displayed price", "inclusive"], ["Add tax at checkout", "exclusive"]], {}, class: "mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2" %>
+          <p class="mt-1 text-sm text-slate-500">VAT-inclusive pricing is generally appropriate for European consumers.</p>
+        </div>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="rounded-2xl border bg-white p-6">
+    <h2 class="text-lg font-bold">Notifications</h2>
+    <%= fields_for :store_setting, @settings do |settings| %>
+      <label class="mt-5 flex items-start gap-3">
+        <%= settings.checkbox :purchase_notifications_enabled, class: "mt-1 size-4 rounded border-slate-300" %>
+        <span>
+          <span class="block text-sm font-semibold">Email me about every purchase</span>
+          <span class="mt-1 block text-sm text-slate-500">Send a notification to <%= Current.user.email_address %> whenever a Stripe, Gumroad, or manual purchase is created.</span>
+        </span>
+      </label>
+    <% end %>
+  </section>
+
+  <section class="rounded-2xl border bg-white p-6">
+    <h2 class="text-lg font-bold">Policies and seller information</h2>
+    <p class="mt-1 text-sm text-slate-500">Published policies appear as links in the storefront footer.</p>
+    <%= fields_for :store_setting, @settings do |settings| %>
+      <div class="mt-5 space-y-6">
+        <div><%= settings.label :privacy_policy, class: "text-sm font-semibold" %><%= settings.lexxy_rich_textarea :privacy_policy, class: "lexxy-content mt-2 min-h-48 rounded-lg border border-slate-300 bg-white" %></div>
+        <div><%= settings.label :terms_of_service, class: "text-sm font-semibold" %><%= settings.lexxy_rich_textarea :terms_of_service, class: "lexxy-content mt-2 min-h-48 rounded-lg border border-slate-300 bg-white" %></div>
+        <div><%= settings.label :refund_policy, class: "text-sm font-semibold" %><%= settings.lexxy_rich_textarea :refund_policy, class: "lexxy-content mt-2 min-h-48 rounded-lg border border-slate-300 bg-white" %></div>
+        <div><%= settings.label :seller_information, "Seller/contact information", class: "text-sm font-semibold" %><%= settings.lexxy_rich_textarea :seller_information, class: "lexxy-content mt-2 min-h-48 rounded-lg border border-slate-300 bg-white" %></div>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="rounded-2xl border bg-white p-6">
+    <h2 class="text-lg font-bold">Owner account</h2>
+    <%= fields_for :user, @user do |user| %>
+      <%= render "shared/errors", object: @user %>
+      <div class="mt-5 space-y-5">
+        <div><%= user.label :name, class: "text-sm font-semibold" %><%= user.text_field :name, class: "mt-2 w-full rounded-lg border px-3 py-2" %></div>
+        <div><%= user.label :email_address, class: "text-sm font-semibold" %><%= user.email_field :email_address, class: "mt-2 w-full rounded-lg border px-3 py-2" %></div>
+        <div><%= user.label :password, "New password (leave blank to keep it)", class: "text-sm font-semibold" %><%= user.password_field :password, class: "mt-2 w-full rounded-lg border px-3 py-2" %></div>
+        <div><%= user.label :password_confirmation, class: "text-sm font-semibold" %><%= user.password_field :password_confirmation, class: "mt-2 w-full rounded-lg border px-3 py-2" %></div>
+        <div><%= user.label :current_password, "Current password (required to change password)", class: "text-sm font-semibold" %><%= user.password_field :current_password, class: "mt-2 w-full rounded-lg border px-3 py-2" %></div>
+      </div>
+    <% end %>
+  </section>
+
+  <%= form.submit "Save settings", class: "cursor-pointer rounded-lg bg-emerald-600 px-5 py-2.5 font-bold text-white" %>
+<% end %>

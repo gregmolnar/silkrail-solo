@@ -1,0 +1,6 @@
+<% if object.errors.any? %>
+  <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+    <p class="font-bold">Please fix the following:</p>
+    <ul class="mt-2 list-disc pl-5"><% object.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+  </div>
+<% end %>

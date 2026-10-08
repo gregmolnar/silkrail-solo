@@ -1,0 +1,7 @@
+<%= @product_update.subject %>
+
+<%= @product_update.body.to_plain_text %>
+
+Access your purchases: <%= @customer ? account_purchases_url : root_url %>
+
+You received this because you purchased <%= @product.name %> from <%= @store.name %>.

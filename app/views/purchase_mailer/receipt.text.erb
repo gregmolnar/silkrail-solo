@@ -1,0 +1,10 @@
+Thanks for buying <%= @purchase.product.name %>.
+
+Access your files and future updates:
+<%= purchase_url(@purchase.access_token) %>
+
+<% if @purchase.customer %>
+Set or reset your account password:
+<%= edit_account_password_url(@purchase.customer.password_reset_token) %>
+<% end %>
+Keep this private link safe.

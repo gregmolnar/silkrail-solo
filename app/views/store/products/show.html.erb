@@ -1,0 +1,58 @@
+<% content_for :title, "#{@product.name} · #{store.name}" %>
+<% content_for :meta_description, @product.summary.to_s.truncate(155) %>
+<% content_for :meta_tags do %>
+  <%= tag.meta property: "og:type", content: "product" %>
+  <%= tag.meta property: "og:title", content: @product.name %>
+  <%= tag.meta property: "og:description", content: @product.summary.to_s.truncate(200) %>
+  <%= tag.meta property: "og:url", content: store_product_url(@product.slug) %>
+  <% if @product.cover.attached? %>
+    <%= tag.meta property: "og:image", content: rails_blob_url(@product.cover) %>
+    <%= tag.meta property: "og:image:alt", content: @product.name %>
+  <% end %>
+<% end %>
+<% content_for :body_class, "product-page product-page--#{@product.slug}" %>
+<% content_for :product_stylesheet do %><%= stylesheet_link_tag store_product_styles_path(@product.slug, v: @product.updated_at.to_i), "data-turbo-track": "reload" %><% end %>
+
+<article class="product-content">
+  <% if @product.cover.attached? %>
+    <div class="product-hero overflow-hidden rounded-2xl border border-slate-900/10 bg-white shadow-sm">
+      <%= image_tag @product.cover, class: "product-cover aspect-[3/1] w-full object-cover", alt: @product.name %>
+    </div>
+  <% end %>
+
+  <div class="product-layout mt-10 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-16">
+    <div class="product-details min-w-0">
+      <header class="product-header border-b border-slate-900/10 pb-8">
+        <p class="product-kicker text-sm font-bold uppercase tracking-[0.15em] text-emerald-700"><%= store.name %></p>
+        <h1 class="product-title mt-3 text-4xl font-black tracking-tight sm:text-5xl"><%= @product.name %></h1>
+        <div class="product-meta mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-base">
+          <span class="product-price text-2xl font-black"><%= humanized_money_with_symbol @product.price %></span>
+          <span class="text-slate-300" aria-hidden="true">•</span>
+          <span class="product-author text-slate-600">By <strong class="font-semibold text-slate-900"><%= @author_name %></strong></span>
+        </div>
+        <% if @product.summary.present? %><p class="product-summary mt-6 text-xl leading-8 text-slate-600"><%= @product.summary %></p><% end %>
+      </header>
+
+      <div class="product-description lexxy-content mt-10 max-w-none"><%= @product.description %></div>
+      <%= render "testimonials", testimonials: @testimonials %>
+    </div>
+
+    <aside class="product-purchase-sidebar lg:sticky lg:top-6">
+      <div class="product-purchase-card rounded-2xl border border-slate-900/10 bg-white p-6 shadow-sm">
+        <% if @product.published? %>
+          <% discount_codes_available = @product.discount_codes.available.exists? %>
+          <%= form_with url: store_checkout_path(@product), data: { turbo: false } do |form| %>
+            <% if discount_codes_available %>
+              <%= form.label :discount_code, "Discount code", class: "discount-code-label block text-sm font-medium" %>
+              <%= form.text_field :discount_code, class: "discount-code-input mt-2 w-full rounded-lg border border-slate-300 px-3 py-2", autocomplete: "off" %>
+            <% end %>
+            <%= form.submit "Buy now", class: "buy-button w-full cursor-pointer rounded-xl bg-emerald-600 px-5 py-3.5 text-lg font-bold text-white hover:bg-emerald-700 #{'mt-5' if discount_codes_available}" %>
+          <% end %>
+          <p class="secure-checkout-note mt-4 text-center text-xs text-slate-500">Secure checkout powered by Stripe</p>
+        <% else %>
+          <p class="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">Draft preview — this product is not for sale.</p>
+        <% end %>
+      </div>
+    </aside>
+  </div>
+</article>

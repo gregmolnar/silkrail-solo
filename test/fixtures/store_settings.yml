@@ -1,0 +1,5 @@
+store:
+  name: Test Store
+  description: Useful downloads
+  support_email: support@example.com
+  currency: usd

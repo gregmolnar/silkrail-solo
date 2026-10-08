@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html class="h-full bg-[#f8f6f1]">
+  <head>
+    <title><%= content_for(:title) || store.name %></title>
+    <meta name="description" content="<%= content_for(:meta_description) || store.description.to_s.truncate(155) %>">
+    <% if content_for?(:meta_tags) %>
+      <%= yield :meta_tags %>
+    <% else %>
+      <%= tag.meta property: "og:type", content: "website" %>
+      <%= tag.meta property: "og:title", content: content_for(:title) || store.name %>
+      <%= tag.meta property: "og:description", content: store.description.to_s.truncate(200) %>
+      <%= tag.meta property: "og:url", content: request.original_url %>
+      <%= tag.meta property: "og:image", content: image_url("og-image.png") %>
+      <%= tag.meta property: "og:image:width", content: "1200" %>
+      <%= tag.meta property: "og:image:height", content: "630" %>
+      <%= tag.meta property: "og:image:alt", content: store.name %>
+    <% end %>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %><%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "lexxy", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag store_styles_path(v: store.updated_at.to_i), "data-turbo-track": "reload" %>
+    <%= yield :product_stylesheet %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="storefront-body min-h-full text-slate-950 <%= content_for(:body_class) %>">
+    <header class="store-header border-b border-slate-900/10">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-6">
+        <%= link_to store.name, root_path, class: "store-brand text-xl font-black tracking-tight" %>
+        <div class="flex items-center gap-4"><%= link_to(Current.customer ? "My purchases" : "Customer sign in", Current.customer ? account_purchases_path : new_account_session_path, class: "text-sm font-semibold underline underline-offset-4") %><% if Current.user %><%= link_to "Admin", admin_root_path, class: "text-sm font-semibold underline underline-offset-4" %><% end %></div>
+      </div>
+    </header>
+    <main class="store-main mx-auto max-w-6xl px-5 py-10">
+      <%= render "shared/flash" %>
+      <%= yield %>
+    </main>
+    <footer class="store-footer mx-auto mt-16 max-w-6xl border-t border-slate-900/10 px-5 py-8 text-sm text-slate-500">
+      <div class="flex flex-wrap gap-x-4 gap-y-2">
+        <span><%= store.name %></span>
+        <% if store.support_email.present? %><%= mail_to store.support_email, "Support" %><% end %>
+        <% if store.privacy_policy.present? %><%= link_to "Privacy", privacy_policy_path %><% end %>
+        <% if store.terms_of_service.present? %><%= link_to "Terms", terms_of_service_path %><% end %>
+        <% if store.refund_policy.present? %><%= link_to "Refund policy", refund_policy_path %><% end %>
+        <% if store.seller_information.present? %><%= link_to "Seller information", seller_information_path %><% end %>
+      </div>
+    </footer>
+    <%= testimonials_tag %>
+  </body>
+</html>

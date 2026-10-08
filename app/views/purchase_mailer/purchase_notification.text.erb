@@ -1,0 +1,10 @@
+New purchase
+
+<%= @purchase.email %> purchased <%= @purchase.product.name %>.
+
+Amount: <%= @purchase.amount.format %>
+Source: <%= @purchase.source.humanize %>
+Purchased: <%= @purchase.created_at.to_fs(:long) %>
+
+View purchase:
+<%= admin_purchase_url(@purchase) %>

@@ -1,0 +1,23 @@
+test:
+  service: Disk
+  root: <%= Rails.root.join("tmp/storage") %>
+
+local:
+  service: Disk
+  root: <%= Rails.root.join("storage") %>
+
+# Works with AWS S3, Cloudflare R2, DigitalOcean Spaces, Backblaze B2,
+# MinIO, and other S3-compatible object stores.
+s3:
+  service: S3
+  access_key_id: <%= ENV["S3_ACCESS_KEY_ID"] %>
+  secret_access_key: <%= ENV["S3_SECRET_ACCESS_KEY"] %>
+  region: <%= ENV.fetch("S3_REGION", "auto") %>
+  bucket: <%= ENV["S3_BUCKET"] %>
+<% if ENV["S3_ENDPOINT"].to_s != "" %>
+  endpoint: <%= ENV["S3_ENDPOINT"] %>
+<% end %>
+  force_path_style: <%= ENV.fetch("S3_FORCE_PATH_STYLE", "true") == "true" %>
+  public: false
+  request_checksum_calculation: when_required
+  response_checksum_validation: when_required

@@ -1,0 +1,11 @@
+<h1>New purchase</h1>
+<p><strong><%= @purchase.email %></strong> purchased <strong><%= @purchase.product.name %></strong>.</p>
+<dl>
+  <dt>Amount</dt>
+  <dd><%= @purchase.amount.format %></dd>
+  <dt>Source</dt>
+  <dd><%= @purchase.source.humanize %></dd>
+  <dt>Purchased</dt>
+  <dd><%= @purchase.created_at.to_fs(:long) %></dd>
+</dl>
+<p><%= link_to "View purchase", admin_purchase_url(@purchase) %></p>

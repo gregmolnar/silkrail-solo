@@ -1,0 +1,34 @@
+<div class="flex items-center justify-between">
+  <div>
+    <p class="store-eyebrow text-sm font-bold uppercase tracking-widest">Your account</p>
+    <h1 class="mt-2 text-3xl font-black">Purchases</h1>
+    <p class="mt-2 text-slate-600"><%= Current.customer.email_address %></p>
+  </div>
+  <%= button_to "Sign out", account_session_path, method: :delete, class: "text-sm font-semibold underline" %>
+</div>
+
+<div class="mt-8 grid gap-4">
+  <% @purchases.each do |purchase| %>
+    <% if purchase.access_token_revoked? %>
+      <div class="product-card flex items-center justify-between rounded-2xl border bg-slate-50 p-5 text-slate-500">
+        <div>
+          <h2 class="font-bold"><%= purchase.product.name %></h2>
+          <p class="mt-1 text-sm">Purchased <%= purchase.created_at.to_fs(:long) %></p>
+        </div>
+        <span class="text-sm font-semibold">Access revoked</span>
+      </div>
+    <% else %>
+      <%= link_to purchase_path(purchase.access_token), class: "product-card flex items-center justify-between rounded-2xl border bg-white p-5" do %>
+        <div>
+          <h2 class="font-bold"><%= purchase.product.name %></h2>
+          <p class="mt-1 text-sm text-slate-500">Purchased <%= purchase.created_at.to_fs(:long) %></p>
+        </div>
+        <span class="font-semibold">Download →</span>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if @purchases.empty? %>
+    <p class="rounded-xl border border-dashed p-10 text-center text-slate-500">No purchases are linked to this account yet.</p>
+  <% end %>
+</div>

@@ -1,0 +1,18 @@
+<section class="store-hero py-10 sm:py-16">
+  <p class="store-eyebrow text-sm font-bold uppercase tracking-[0.2em] text-emerald-700">Digital goods, directly from us</p>
+  <h1 class="store-title mt-4 max-w-3xl text-4xl font-black tracking-tight sm:text-6xl"><%= store.name %></h1>
+  <% if store.description.present? %><p class="store-description mt-5 max-w-2xl text-lg leading-8 text-slate-600"><%= store.description %></p><% end %>
+</section>
+
+<% if @products.any? %>
+  <div class="product-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <% @products.each do |product| %>
+      <%= link_to store_product_path(product.slug), class: "product-card group overflow-hidden rounded-2xl border border-slate-900/10 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg" do %>
+        <div class="product-card-image aspect-[16/10] bg-slate-200"><% if product.cover.attached? %><%= image_tag product.cover, class: "h-full w-full object-cover" %><% else %><div class="flex h-full items-center justify-center text-4xl font-black text-slate-400"><%= product.name.first %></div><% end %></div>
+        <div class="product-card-body p-5"><div class="flex items-start justify-between gap-4"><h2 class="product-card-title text-lg font-bold group-hover:underline"><%= product.name %></h2><span class="product-card-price whitespace-nowrap font-semibold"><%= humanized_money_with_symbol product.price %></span></div><p class="product-card-summary mt-2 text-sm leading-6 text-slate-600"><%= product.summary %></p></div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="rounded-2xl border border-dashed border-slate-300 p-12 text-center text-slate-500">No products are available yet.</div>
+<% end %>

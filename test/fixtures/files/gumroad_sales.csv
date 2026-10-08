@@ -1,0 +1,5 @@
+Item Name,Purchase Email,Buyer Email,Buyer Name,Purchase Time (UTC timezone),Sale Price ($),Item Price ($),Sale ID
+Field Guide,buyer-one@example.com,,Buyer One,2025-06-10 14:30:00,19.00,19.00,sale-one
+Another Product,skip@example.com,,Skip Me,2025-06-10 15:00:00,12.00,12.00,sale-two
+Field Guide,,buyer-two@example.com,Buyer Two,2025-06-11 09:15:00,,9.50,sale-three
+Totals,,,,,28.50,,

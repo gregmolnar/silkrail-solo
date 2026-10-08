@@ -1,0 +1,3 @@
+buyer:
+  email_address: buyer@example.com
+  password_digest: <%= BCrypt::Password.create("customer-password") %>

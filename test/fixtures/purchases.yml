@@ -1,0 +1,9 @@
+buyer:
+  product: published
+  customer: buyer
+  email: buyer@example.com
+  amount_cents: 1900
+  currency: usd
+  stripe_checkout_session_id: cs_test_fixture
+  stripe_payment_intent_id: pi_test_fixture
+  access_token: fixture-access-token-that-is-private
