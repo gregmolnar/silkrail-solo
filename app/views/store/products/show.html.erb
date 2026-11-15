@@ -44,7 +44,7 @@
           <%= form_with url: store_checkout_path(@product), data: { turbo: false } do |form| %>
             <% if discount_codes_available %>
               <%= form.label :discount_code, "Discount code", class: "discount-code-label block text-sm font-medium" %>
-              <%= form.text_field :discount_code, class: "discount-code-input mt-2 w-full rounded-lg border border-slate-300 px-3 py-2", autocomplete: "off" %>
+              <%= form.text_field :discount_code, class: "discount-code-input mt-2 w-full rounded-lg border border-slate-300 px-3 py-2", autocomplete: "off", value: params[:code] %>
             <% end %>
             <%= form.submit "Buy now", class: "buy-button w-full cursor-pointer rounded-xl bg-emerald-600 px-5 py-3.5 text-lg font-bold text-white hover:bg-emerald-700 #{'mt-5' if discount_codes_available}" %>
           <% end %>
